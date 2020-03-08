@@ -37,7 +37,13 @@ func NewAPI(ctx husk.Ctxer, defaultPagesize int, middleware ...gin.HandlerFunc) 
 //empty search
 func getAction(t husk.Tabler, pageSize int) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		results := t.Find(1, pageSize, husk.Everything())
+		results, err := t.Find(1, pageSize, husk.Everything())
+
+		if err !=  nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
+
 		c.JSON(http.StatusOK, results)
 	}
 }
@@ -60,7 +66,12 @@ func searchAction(t husk.Tabler, pageSize int) gin.HandlerFunc {
 			return
 		}
 
-		results := t.Find(page, size, husk.ByFields(parmObj))
+		results, err := t.Find(page, size, husk.ByFields(parmObj))
+
+		if err !=  nil {
+			c.AbortWithError(http.StatusInternalServerError, err)
+			return
+		}
 
 		c.JSON(http.StatusOK, results)
 	}
