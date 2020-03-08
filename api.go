@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -15,7 +16,7 @@ import (
 
 func NewAPI(ctx husk.Ctxer, defaultPagesize int, middleware ...gin.HandlerFunc) *gin.Engine {
 	result := gin.Default()
-
+	result.Use(cors.Default())
 	tbls := husk.TableLayouts(ctx)
 	for name, tbl := range tbls {
 		lname := strings.ToLower(name)
@@ -39,7 +40,7 @@ func getAction(t husk.Tabler, pageSize int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		results, err := t.Find(1, pageSize, husk.Everything())
 
-		if err !=  nil {
+		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
@@ -68,7 +69,7 @@ func searchAction(t husk.Tabler, pageSize int) gin.HandlerFunc {
 
 		results, err := t.Find(page, size, husk.ByFields(parmObj))
 
-		if err !=  nil {
+		if err != nil {
 			c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
