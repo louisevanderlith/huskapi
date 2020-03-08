@@ -101,7 +101,7 @@ func viewAction(t husk.Tabler) gin.HandlerFunc {
 func createAction(t husk.Tabler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		body := reflect.New(t.Type()).Interface().(husk.Dataer)
-		err := c.Bind(&body)
+		err := c.BindJSON(body)
 
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
@@ -111,7 +111,7 @@ func createAction(t husk.Tabler) gin.HandlerFunc {
 		cset := t.Create(body)
 
 		if cset.Error != nil {
-			c.AbortWithError(http.StatusBadRequest, err)
+			c.AbortWithError(http.StatusBadRequest, cset.Error)
 			return
 		}
 
@@ -136,7 +136,7 @@ func updateAction(t husk.Tabler) gin.HandlerFunc {
 		}
 
 		body := reflect.New(t.Type()).Interface().(husk.Dataer)
-		err = c.Bind(body)
+		err = c.BindJSON(body)
 
 		if err != nil {
 			c.AbortWithError(http.StatusBadRequest, err)
